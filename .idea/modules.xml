@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/fine_tune.iml" filepath="$PROJECT_DIR$/.idea/fine_tune.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/industry-llm.iml" filepath="$PROJECT_DIR$/.idea/industry-llm.iml" />
     </modules>
   </component>
 </project>
