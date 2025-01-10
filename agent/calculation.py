@@ -7,11 +7,11 @@ Execution: The agent processes user input and decides when to respond directly o
 """
 
 import os
-from langchain.llms import OpenAI
+from langchain_project.llms import OpenAI
 
 os.environ["OPENAI_API_KEY"] = "your-api-key-here"
 
-from langchain.tools import Tool
+from langchain_project.tools import Tool
 
 def calculator_tool(query: str) -> str:
     try:
@@ -20,9 +20,9 @@ def calculator_tool(query: str) -> str:
         return "I can only calculate mathematical expressions."
 
 
-from langchain.agents import initialize_agent, Tool
-from langchain.agents import AgentType
-from langchain.llms import OpenAI
+from langchain_project.agents import initialize_agent, Tool
+from langchain_project.agents import AgentType
+from langchain_project.llms import OpenAI
 
 # Define the LLM (e.g., OpenAI GPT-3.5)
 llm = OpenAI(model="gpt-3.5-turbo")

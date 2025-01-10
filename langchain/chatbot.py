@@ -1,11 +1,11 @@
 import os
-from langchain.llms import OpenAI
+from langchain_project.llms import OpenAI
 
 # Set your OpenAI API key
 os.environ["OPENAI_API_KEY"] = "your-api-key-here"
 
-from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain
+from langchain_project.prompts import PromptTemplate
+from langchain_project.chains import LLMChain
 
 # Define the prompt template for the chatbot
 template = """
