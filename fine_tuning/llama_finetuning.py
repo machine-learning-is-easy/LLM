@@ -15,6 +15,50 @@ from peft import (
 torch.cuda.empty_cache()
 # Load model directly
 from transformers import AutoTokenizer, AutoModelForCausalLM
+
+from datasets import load_metric
+import torch
+from transformers import Trainer, TrainingArguments
+
+# Load metrics
+bleu_metric = load_metric("bleu")
+rouge_metric = load_metric("rouge")
+meteor_metric = load_metric("meteor")
+
+
+# Define compute_metrics function
+def compute_metrics(p):
+    predictions, labels = p
+    # Decode the predictions and labels (if needed)
+    decoded_preds = tokenizer.batch_decode(predictions, skip_special_tokens=True)
+    decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
+
+    # Compute BLEU score
+    bleu_score = bleu_metric.compute(predictions=decoded_preds, references=[[label] for label in decoded_labels])
+
+    # Compute ROUGE score
+    rouge_score = rouge_metric.compute(predictions=decoded_preds, references=[[label] for label in decoded_labels])
+
+    # Compute METEOR score
+    meteor_score = meteor_metric.compute(predictions=decoded_preds, references=decoded_labels)
+
+    # Compute Perplexity
+    # For perplexity, we need to compute the loss and then exponentiate it
+    inputs = tokenizer(decoded_preds, return_tensors="pt", padding=True, truncation=True)
+    labels = tokenizer(decoded_labels, return_tensors="pt", padding=True, truncation=True)
+    outputs = model(**inputs, labels=labels["input_ids"])
+    loss = outputs.loss
+    perplexity = torch.exp(loss).item()  # Convert tensor to number
+
+    return {
+        "bleu": bleu_score["bleu"]
+        # "rouge1": rouge_score["rouge1"].fmeasure,
+        # "rouge2": rouge_score["rouge2"].fmeasure,
+        # "rougeL": rouge_score["rougeL"].fmeasure,
+        # "meteor": meteor_score["meteor"],
+        # "perplexity": perplexity,
+    }
+
 new_model = "Llama-3.2-1B/adapter_model"
 model_id = "meta-llama/Llama-3.2-1B"
 # model_id = "meta-llama/Llama-3.2-11B-Vision"
@@ -119,6 +163,7 @@ trainer = Trainer(
     eval_dataset=tokenized_val_dataset,
     args=training_args,
     data_collator=DataCollatorForSeq2Seq(tokenizer, pad_to_multiple_of=8, return_tensors="pt", padding=True),
+    # compute_metrics=compute_metrics
 )
 
 model.config.use_cache = False
